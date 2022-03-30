@@ -10,6 +10,11 @@ type Costs = {
 }
 type Processed = string[]
 
+export interface dijkstraOutput {
+  distance: number,
+  path: string[] | null
+}
+
 const lowestCostNode = (costs: Costs, processed: Processed) =>
   Object
     .keys(costs)
@@ -22,7 +27,7 @@ const lowestCostNode = (costs: Costs, processed: Processed) =>
       return lowest;
     }, null as string | null);
 
-export const dijkstra = async (graph: Graph) => {
+export const dijkstra = async (graph: Graph): Promise<dijkstraOutput> => {
   const start = graph.findCellByKind(Kind.Start)
   const finish = graph.findCellByKind(Kind.Finish)
   if (start === undefined) {

@@ -4,7 +4,7 @@ export enum Kind {
   Finish = "Finish",
   Gravel = "Gravel",
   Boulder = "Boulder",
-  Vortex = "Vortex",
+  Wormhole = "Wormhole",
 }
 
 export class Cell {
@@ -66,21 +66,21 @@ export class Graph {
       neigbours.push(cells[(y - 1) * width + x])
       neigbours.push(cells[(y + 1) * width + x])
     }
-    if (kind === Kind.Vortex) {
+    if (kind === Kind.Wormhole) {
       this
         .cells
-        .filter(c => c.kind === Kind.Vortex && c.id !== id)
+        .filter(c => c.kind === Kind.Wormhole && c.id !== id)
         .forEach(c => neigbours.push(c))
     }
     return neigbours.filter(cell => cell.kind !== Kind.Boulder && cell.kind !== Kind.Start)
   }
 
   private setUniqueKind(id: string, kind: Kind.Start | Kind.Finish) {
-    const start = this.findCellByKind(kind)
+    const uniqu = this.findCellByKind(kind)
     const cell = this.findCellById(id);
     if (cell) {
-      if (start) {
-        start.kind = kind
+      if (uniqu) {
+        uniqu.kind = Kind.Regular
       }
       cell.kind = kind
       return true
@@ -89,10 +89,13 @@ export class Graph {
     }
   }
 
-  private setCommonKind(id: string, kind: Kind.Boulder | Kind.Gravel | Kind.Vortex) {
+  private setCommonKind(id: string, kind: Kind.Boulder | Kind.Gravel | Kind.Wormhole) {
     const cell = this.findCellById(id);
-    if (cell) {
+    if (cell && cell.kind !== kind) {
       cell.kind = kind
+      return true
+    } else if (cell && cell.kind === kind) {
+      cell.kind = Kind.Regular
       return true
     } else {
       return false
@@ -115,12 +118,22 @@ export class Graph {
     return this.setCommonKind(id, Kind.Gravel)
   }
 
-  setVortex(id: string) {
-    return this.setCommonKind(id, Kind.Vortex)
+  setWormhole(id: string) {
+    return this.setCommonKind(id, Kind.Wormhole)
+  }
+
+  setRoad(id: string) {
+    const cell = this.findCellById(id);
+    if (cell) {
+      cell.kind = Kind.Regular
+      return true
+    } else {
+      return false
+    }
   }
 
   static calcDistance(cell: Cell, parent?: Cell) {
-    if (parent && parent.kind === Kind.Vortex && cell.kind === Kind.Vortex) {
+    if (parent && parent.kind === Kind.Wormhole && cell.kind === Kind.Wormhole) {
       return 0
     } else if (cell.kind === Kind.Gravel) {
       return 2
