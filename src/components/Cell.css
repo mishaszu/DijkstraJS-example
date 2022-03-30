@@ -1,0 +1,6 @@
+.cell-min-size {
+  min-width: 40px;
+  max-width: 150px;
+  min-height: 40px;
+  max-height: 150px;
+}
