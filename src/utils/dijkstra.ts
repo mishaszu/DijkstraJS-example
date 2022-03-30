@@ -1,5 +1,6 @@
-import {Graph} from './graph'
+import {Graph, Kind} from './graph'
 
+// how ids are build:
 // [1 2 3]
 // [4 5 6]
 // [7 8 9]
@@ -22,8 +23,8 @@ const lowestCostNode = (costs: Costs, processed: Processed) =>
     }, null as string | null);
 
 export const dijkstra = async (graph: Graph) => {
-  const start = graph.cells.find(c => c.isStart)
-  const finish = graph.cells.find(c => c.isFinish)
+  const start = graph.findCellByKind(Kind.Start)
+  const finish = graph.findCellByKind(Kind.Finish)
   if (start === undefined) {
     throw new Error("Start node not specified")
   }
@@ -37,7 +38,11 @@ export const dijkstra = async (graph: Graph) => {
 
   graph.getNeighbourByParentId(start.id).forEach(child => {
     parents[child.id] = start.id
-    costs[child.id] = child.cost
+    if (child.kind === Kind.Gravel) {
+      costs[child.id] = 2
+    } else {
+      costs[child.id] = child.cost
+    }
   })
 
   let node = lowestCostNode(costs, processed)
@@ -47,7 +52,7 @@ export const dijkstra = async (graph: Graph) => {
     const cost = costs[noNullNode]
     const parentCell = graph.findCellById(noNullNode)
     graph.getNeighbourByParentId(noNullNode).forEach(child => {
-      const childCost = parentCell && (parentCell.vortexConnection === null) ? child.cost : 0
+      const childCost = Graph.calcDistance(child, parentCell)
       let newCost = cost + childCost
       if (!costs[child.id]) {
         costs[child.id] = newCost
@@ -57,13 +62,12 @@ export const dijkstra = async (graph: Graph) => {
         costs[child.id] = newCost
         parents[child.id] = noNullNode
       }
-      if (child.isFinish) {
-        costs["finish"] = newCost
-        parents["finish"] = noNullNode
-      }
     })
     processed.push(noNullNode)
-    if (parents["finish"] !== null) {
+
+    if (parentCell && parentCell.kind === Kind.Finish) {
+      costs["finish"] = cost
+      parents["finish"] = parentCell.id
       node = null
     } else {
       node = lowestCostNode(costs, processed)
@@ -82,6 +86,6 @@ export const dijkstra = async (graph: Graph) => {
 
   return {
     distance: costs.finish,
-    path: optimalPath.length === 1 ? null : optimalPath
+    path: optimalPath.length === 1 ? null : optimalPath.slice(0, -1)
   };
 }

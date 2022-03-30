@@ -25,24 +25,19 @@ export const Grid: FC<Props> = ({graph}) => {
   }, [ref?.current, graph.width, graph.height])
   return (
     <div ref={ref} className={`flex flex-col ${justify ? "items-center justify-center" : "p-4"} w-3/4 h-full overflow-auto`}>
-        {
-          Array(graph.height).fill(null).map((_, index) => <div key={`row-${index}`} className="flex">
-            {
-              graph.cells.slice(index * graph.width, (index + 1) * graph.width).map(c =>
-                <Cell
-                  key={c.id}
-                  id={c.id}
-                  size={size}
-                  cost={c.cost}
-                  isBlocked={c.isBlocked}
-                  isFinish={c.isFinish}
-                  isStart={c.isStart}
-                  vortexConnection={c.vortexConnection}
-                />
-              )
-            }
-          </div>)
-        }
+      {
+        Array(graph.height).fill(null).map((_, index) => <div key={`row-${index}`} className="flex">
+          {
+            graph.cells.slice(index * graph.width, (index + 1) * graph.width).map(c =>
+              <Cell
+                key={c.id}
+                cell={c}
+                size={size}
+              />
+            )
+          }
+        </div>)
+      }
     </div>
   )
 }

@@ -1,31 +1,17 @@
+export enum Kind {
+  Regular = "Regular",
+  Start = "Start",
+  Finish = "Finish",
+  Gravel = "Gravel",
+  Boulder = "Boulder",
+  Vortex = "Vortex",
+}
+
 export class Cell {
-  public isBlocked: boolean = false
-  public vortexConnection: Cell | null = null
   public cost: number = 1
-  public isFinish: boolean = false
-  public isStart: boolean = false
+  public kind: Kind = Kind.Regular
 
   constructor(public x: number, public y: number, public id: string) {
-  }
-
-  setBlocked() {
-    this.isBlocked = !this.isBlocked
-  }
-
-  setSwamp() {
-    this.cost = 2
-  }
-
-  setRoad() {
-    this.cost = 1
-  }
-
-  setStart() {
-    this.isStart = !this.isStart
-  }
-
-  setFinish() {
-    this.isFinish = !this.isFinish
   }
 }
 
@@ -47,6 +33,11 @@ export class Graph {
     return this.cells.find(c => c.id === id)
   }
 
+  findCellByKind(kind: Kind) {
+    return this.cells.find(c => c.kind === kind)
+  }
+
+
   getNeighbourByParentId(id: number | string): Cell[] {
     const cell = this.cells.find(c => c.id === id)
     if (cell) {
@@ -56,7 +47,7 @@ export class Graph {
     }
   }
 
-  getNeighbourCells({x, y, vortexConnection}: Cell): Cell[] {
+  getNeighbourCells({x, y, kind, id}: Cell): Cell[] {
     const neigbours = []
     const {cells, width, height} = this
     if (x <= 0) {
@@ -75,9 +66,66 @@ export class Graph {
       neigbours.push(cells[(y - 1) * width + x])
       neigbours.push(cells[(y + 1) * width + x])
     }
-    if (vortexConnection) {
-      neigbours.push(vortexConnection)
+    if (kind === Kind.Vortex) {
+      this
+        .cells
+        .filter(c => c.kind === Kind.Vortex && c.id !== id)
+        .forEach(c => neigbours.push(c))
     }
-    return neigbours.filter(cell => !cell.isBlocked && !cell.isStart)
+    return neigbours.filter(cell => cell.kind !== Kind.Boulder && cell.kind !== Kind.Start)
+  }
+
+  private setUniqueKind(id: string, kind: Kind.Start | Kind.Finish) {
+    const start = this.findCellByKind(kind)
+    const cell = this.findCellById(id);
+    if (cell) {
+      if (start) {
+        start.kind = kind
+      }
+      cell.kind = kind
+      return true
+    } else {
+      return false
+    }
+  }
+
+  private setCommonKind(id: string, kind: Kind.Boulder | Kind.Gravel | Kind.Vortex) {
+    const cell = this.findCellById(id);
+    if (cell) {
+      cell.kind = kind
+      return true
+    } else {
+      return false
+    }
+  }
+
+  setStart(id: string) {
+    return this.setUniqueKind(id, Kind.Start)
+  }
+
+  setFinish(id: string) {
+    return this.setUniqueKind(id, Kind.Finish)
+  }
+
+  setBoulder(id: string) {
+    return this.setCommonKind(id, Kind.Boulder)
+  }
+
+  setGravel(id: string) {
+    return this.setCommonKind(id, Kind.Gravel)
+  }
+
+  setVortex(id: string) {
+    return this.setCommonKind(id, Kind.Vortex)
+  }
+
+  static calcDistance(cell: Cell, parent?: Cell) {
+    if (parent && parent.kind === Kind.Vortex && cell.kind === Kind.Vortex) {
+      return 0
+    } else if (cell.kind === Kind.Gravel) {
+      return 2
+    } else {
+      return 1
+    }
   }
 }
