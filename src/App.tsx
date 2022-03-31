@@ -121,7 +121,7 @@ function App() {
   return (
     <>
       <main className="flex items-center w-full h-full align-center">
-        <div className="flex flex-col justify-between w-1/4 h-full text-white border-r-4 bg-emerald-600 min-w-300">
+        <div className="flex flex-col justify-between w-1/4 h-full overflow-y-auto text-white border-r-4 bg-emerald-600 min-w-300">
           <h1 className="my-4 text-2xl text-center">Dijkstra algorithm <span className="block">JS/TS</span>implementation</h1>
           <div className="flex flex-col items-center">
             <p className="my-2 text-2xl">{graph.width} x {graph.height} grid</p>
