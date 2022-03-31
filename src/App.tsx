@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import './App.css';
 import {Graph, Kind} from './utils/graph';
 import {Grid} from './components/Grid';
@@ -16,9 +16,6 @@ export enum Mode {
   Wormhole,
   Clear
 }
-
-const FillP = () => 
-  <p className="w-full py-2 my-2 text-center"></p>
 
 function App() {
   const [graph, setGraph] = useState(new Graph(6, 6))
@@ -124,17 +121,17 @@ function App() {
   return (
     <>
       <main className="flex items-center w-full h-full align-center">
-        <div className="flex flex-col justify-between w-1/4 h-full text-white border-r-4 bg-emerald-600">
+        <div className="flex flex-col justify-between w-1/4 h-full text-white border-r-4 bg-emerald-600 min-w-300">
           <h1 className="my-4 text-2xl text-center">Dijkstra algorithm <span className="block">JS/TS</span>implementation</h1>
           <div className="flex flex-col items-center">
             <p className="my-2 text-2xl">{graph.width} x {graph.height} grid</p>
             {
               !canRun &&
-              <p className="w-full py-2 text-xl my-2 text-center bg-pink-500">You have to set start and finish</p>
+              <p className="w-full py-2 my-2 text-xl text-center bg-pink-500">You have to set start and finish</p>
             }
             {
               pathResult.result && pathResult.result.path === null &&
-              <p className="w-full text-xl py-2 my-2 text-center bg-pink-500">Path to finish is blocked!</p>
+              <p className="w-full py-2 my-2 text-xl text-center bg-pink-500">Path to finish is blocked!</p>
             }
             {
               pathResult.time && pathResult.result &&
@@ -142,11 +139,11 @@ function App() {
             }
             {
               loading &&
-              <p className="w-full text-xl py-2 my-2 text-center bg-violet-500">Calculating path</p>
+              <p className="w-full py-2 my-2 text-xl text-center bg-violet-500">Calculating path</p>
             }
             {
               !loading && canRun && !pathResult.time && !pathResult.result && 
-              <p className="w-full text-xl py-2 my-2 text-center">Ready to run</p>
+              <p className="w-full py-2 my-2 text-xl text-center">Ready to run</p>
             }
           </div>
           <form className="flex flex-col items-center p-2 border-t border-b" onSubmit={v => onSubmit(v)}>
@@ -210,7 +207,7 @@ function App() {
             </div>
           </div>
         </div>
-        <Grid graph={graph} updateGraph={updateGraph} modeSelected={mode !== Mode.None} result={pathResult.result && pathResult.result?.path ? pathResult.result.path : []} />
+        <Grid className="min-w-350" graph={graph} updateGraph={updateGraph} modeSelected={mode !== Mode.None} result={pathResult.result && pathResult.result?.path ? pathResult.result.path : []} />
       </main>
     </>
   );
