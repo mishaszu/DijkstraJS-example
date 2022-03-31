@@ -49,23 +49,33 @@ const recursiveLowestChildFlow = (graph: Graph, currentNode: string, costs: Cost
       }
     })
     const newNode = lowestCostNode(newCostObj, processed)
-    if (newNode === null) {
-      return [newCostObj, newParentsObj]
-    } else {
-      const newProcessed = processed.concat(newNode)
-      return recursiveLowestChildFlow(graph, newNode, newCostObj, newParentsObj, newProcessed);
-    }
+    const newProcessed =  processed.concat([ newNode ])
   }
-}
+  // loop will run only with no null node variable
+  // const noNullNode = node
+  // const cost = costs[noNullNode]
+  // const parentCell = graph.findCellById(noNullNode)
+  // graph.getNeighbourByParentId(noNullNode).forEach(child => {
+  //   const childCost = Graph.calcDistance(child, parentCell)
+  //   let newCost = cost + childCost
+  //   if (!costs[child.id]) {
+  //     costs[child.id] = newCost
+  //     parents[child.id] = noNullNode
+  //   }
+  //   if (costs[child.id] > newCost) {
+  //     costs[child.id] = newCost
+  //     parents[child.id] = noNullNode
+  //   }
+  // })
+  // processed.push(noNullNode)
 
-const reduceParent = (parent: string | null, parents: Parents, optimalPath: string[], finishId: string): string[] => {
-  if (!parent) {
-    return optimalPath
-  } else {
-    const node = parent === "finish" ? finishId : parent;
-    const newOptimalPath = optimalPath.concat(node)
-    return reduceParent(parents[node], parents, newOptimalPath, finishId)
-  }
+  // if (parentCell && parentCell.kind === Kind.Finish) {
+  //   costs["finish"] = cost
+  //   parents["finish"] = parentCell.id
+  //   node = null
+  // } else {
+  //   node = lowestCostNode(costs, processed)
+  // }
 }
 
 export const dijkstra = async (graph: Graph): Promise<dijkstraOutput> => {
@@ -90,21 +100,48 @@ export const dijkstra = async (graph: Graph): Promise<dijkstraOutput> => {
       costs[child.id] = child.cost
     }
   })
-  const node = lowestCostNode(costs, processed)
-  if (!node) {
-    return {
-      distance: costs.finish,
-      path: null
-    }
-  }
-  const [doneCosts, doneParents] = recursiveLowestChildFlow(graph, node, costs, parents, processed);
 
-  const optimalPath = reduceParent("finish", doneParents, [], finish.id)
+  // let node = lowestCostNode(costs, processed)
+  // while (node) {
+  //   // loop will run only with no null node variable
+  //   const noNullNode = node as string
+  //   const cost = costs[noNullNode]
+  //   const parentCell = graph.findCellById(noNullNode)
+  //   graph.getNeighbourByParentId(noNullNode).forEach(child => {
+  //     const childCost = Graph.calcDistance(child, parentCell)
+  //     let newCost = cost + childCost
+  //     if (!costs[child.id]) {
+  //       costs[child.id] = newCost
+  //       parents[child.id] = noNullNode
+  //     }
+  //     if (costs[child.id] > newCost) {
+  //       costs[child.id] = newCost
+  //       parents[child.id] = noNullNode
+  //     }
+  //   })
+  //   processed.push(noNullNode)
+
+  //   if (parentCell && parentCell.kind === Kind.Finish) {
+  //     costs["finish"] = cost
+  //     parents["finish"] = parentCell.id
+  //     node = null
+  //   } else {
+  //     node = lowestCostNode(costs, processed)
+  //   }
+  // }
+
+  const optimalPath = ["finish"]
+  let parent = parents.finish
+
+  while (parent) {
+    optimalPath.push(parent === "finish" ? finish.id : parent)
+    parent = parents[parent]
+  }
 
   optimalPath.reverse()
 
   return {
-    distance: doneCosts.finish,
-    path: optimalPath.length === 1 ? null : optimalPath
+    distance: costs.finish,
+    path: optimalPath.length === 1 ? null : optimalPath.slice(0, -1)
   };
 }
