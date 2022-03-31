@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import './App.css';
 import {Graph, Kind} from './utils/graph';
 import {Grid} from './components/Grid';
-import {faCertificate, faDumpster, faFlagCheckered, faFontAwesome, faMountain, faRoadSpikes, faSun} from '@fortawesome/free-solid-svg-icons';
+import {faCertificate, faFlagCheckered, faFontAwesome, faMountain, faRoadSpikes, faSun} from '@fortawesome/free-solid-svg-icons';
 import {ButtonPicker} from './components/ButtonPicker';
 import {dijkstra, dijkstraOutput} from './utils/dijkstra'
 import {graphRandomFill} from './utils/random'
