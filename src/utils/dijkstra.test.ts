@@ -61,3 +61,19 @@ it("Gravel 3x3 scenario", async () => {
   expect(result.path).toHaveLength(3)
   expect(result.distance).toBe(3)
 })
+
+// 01 02 03 04
+// 05 06 07 08
+// 09 10 11 12
+// 13 14 15 16
+
+it("Wormhole 4x4 scenario", async () => {
+  const graph = new Graph(4, 4);
+  graph.setStart("1")
+  graph.setFinish("16")
+  graph.setWormhole("2")
+  graph.setWormhole("15")
+  const result = await dijkstra(graph)
+  expect(result.path).toHaveLength(4)
+  expect(result.distance).toBe(2)
+})

@@ -28,30 +28,33 @@ export const Grid: FC<Props> = ({graph, updateGraph, modeSelected, result = [], 
     setSizeAndJustify(sizeFromRef(ref, graph.width, graph.height))
   }, [graph.width, graph.height])
   return (
-    <div ref={ref} className={`flex flex-col ${justify ? "items-center justify-center" : "p-4"} w-3/4 h-full overflow-auto ${className}`}>
+    <div
+      ref={ref}
+      className={`flex flex-col ${justify ? "items-center justify-center" : "p-4"} w-3/4 h-full overflow-auto ${className}`}
+    >
       {
-        Array(graph.height).fill(null).map((_, index) => <div key={`row-${index}`} className="flex">
-          {
-            graph.cells.slice(index * graph.width, (index + 1) * graph.width).map(c => {
-              const indexOf = result.indexOf(c.id);
-              const selectTimeout = indexOf > -1 ? indexOf : null
+        Array(graph.height)
+          .fill(null)
+          .map((_, index) =>
+            <div key={`row-${index}`} className="flex">
+              {
+                graph.cells.slice(index * graph.width, (index + 1) * graph.width).map(c => {
+                  const indexOf = result.indexOf(c.id);
+                  const selectTimeout = indexOf > -1 ? indexOf : null
 
-              return <Cell
-                selectTimeout={selectTimeout}
-                onClick={_ => updateGraph(c.id)}
-                modeSelected={modeSelected}
-                key={c.id}
-                cell={c}
-                size={size}
-              />
-            })
-          }
-        </div>)
+                  return <Cell
+                    selectTimeout={selectTimeout}
+                    onClick={_ => updateGraph(c.id)}
+                    modeSelected={modeSelected}
+                    key={c.id}
+                    cell={c}
+                    size={size}
+                  />
+                })
+              }
+            </div>
+          )
       }
     </div>
   )
 }
-      // {
-//
-// graph.cells.map
-      // }

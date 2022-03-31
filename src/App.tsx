@@ -28,17 +28,7 @@ function App() {
   })
   const [mode, setMode] = useState(Mode.None)
   const [loading, setLoading] = useState(false)
-
-  const reset = (withGraph = false) => {
-    if (withGraph) {
-      graph.cells.forEach(c => {c.kind = Kind.Regular})
-      setGraph(Object.create(graph))
-    }
-    setPathResult({
-      time: null,
-      result: null
-    })
-  }
+  const canRun = !!graph.findCellByKind(Kind.Start) && !!graph.findCellByKind(Kind.Finish)
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -57,6 +47,22 @@ function App() {
     reset()
   }
 
+  const reset = (withGraph = false) => {
+    if (withGraph) {
+      graph.cells.forEach(c => {c.kind = Kind.Regular})
+      setGraph(Object.create(graph))
+    }
+    setPathResult({
+      time: null,
+      result: null
+    })
+  }
+
+  const random = () => {
+    reset()
+    const newGraph = graphRandomFill(new Graph(graph.width, graph.height))
+    setGraph(newGraph)
+  }
 
   const updateGraph = (id: string) => {
     switch (mode) {
@@ -84,8 +90,6 @@ function App() {
     setGraph(Object.create(graph))
   }
 
-  const canRun = !!graph.findCellByKind(Kind.Start) && !!graph.findCellByKind(Kind.Finish)
-
   const modeClick = (mode: Mode) => (_: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     setMode(old => {
       if (old === mode) {
@@ -99,6 +103,7 @@ function App() {
   const runDijkstra = () => {
     const start = window.performance.now();
     setLoading(true)
+    // timeout to allow setLoading
     setTimeout(() => {
       dijkstra(graph).then(result => {
         const end = window.performance.now();
@@ -112,17 +117,13 @@ function App() {
     }, 50)
   }
 
-  const random = () => {
-    reset()
-    const newGraph = graphRandomFill(new Graph(graph.width, graph.height))
-    setGraph(newGraph)
-  }
-
   return (
     <>
       <main className="flex items-center w-full h-full align-center">
         <div className="flex flex-col justify-between w-1/4 h-full overflow-y-auto text-white border-r-4 bg-emerald-600 min-w-300">
-          <h1 className="my-4 text-2xl text-center">Dijkstra algorithm <span className="block">JS/TS</span>implementation</h1>
+          <h1 className="my-4 text-2xl text-center">
+            Dijkstra algorithm <span className="block">JS/TS</span>implementation
+          </h1>
           <div className="flex flex-col items-center">
             <p className="my-2 text-2xl">{graph.width} x {graph.height} grid</p>
             {
@@ -142,7 +143,7 @@ function App() {
               <p className="w-full py-2 my-2 text-xl text-center bg-violet-500">Calculating path</p>
             }
             {
-              !loading && canRun && !pathResult.time && !pathResult.result && 
+              !loading && canRun && !pathResult.time && !pathResult.result &&
               <p className="w-full py-2 my-2 text-xl text-center">Ready to run</p>
             }
           </div>
@@ -151,12 +152,22 @@ function App() {
             <div className="flex items-center justify-around">
               <div className="inline-block w-1/3">
                 <label className="block mb-2 text-sm font-bold text-gray-300" htmlFor="widthInput">Width</label>
-                <input className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="number" name="widthInput" placeholder="6" />
+                <input
+                  className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                  type="number"
+                  name="widthInput"
+                  placeholder="6"
+                />
               </div>
               <p>x</p>
               <div className="inline-block w-1/3 my-4">
                 <label className="block mb-2 text-sm font-bold text-gray-300" htmlFor="heightInput">Height</label>
-                <input className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="number" name="heightInput" placeholder="6" />
+                <input
+                  className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                  type="number"
+                  name="heightInput"
+                  placeholder="6"
+                />
               </div>
             </div>
             <button className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700" type="submit">Set new grid</button>
@@ -200,14 +211,36 @@ function App() {
             />
           </div>
           <div className="flex flex-col items-center my-4">
-            <button onClick={_ => runDijkstra()} className={`px-8 py-4 mx-2 text-2xl font-bold text-white rounded cursor-pointer ${canRun ? "bg-blue-500 hover:bg-blue-700" : "bg-gray-500"}`} disabled={!canRun}>Find route</button>
+            <button
+              onClick={_ => runDijkstra()}
+              className={`px-8 py-4 mx-2 text-2xl font-bold text-white rounded cursor-pointer ${canRun ? "bg-blue-500 hover:bg-blue-700" : "bg-gray-500"}`}
+              disabled={!canRun}
+            >
+              Find route
+            </button>
             <div>
-              <button onClick={_ => random()} className={`px-4 py-2 my-4 mx-2 font-bold text-white rounded cursor-pointer bg-teal-500 hover:bg-teal-700`}>Random</button>
-              <button onClick={_ => reset(true)} className={`px-4 py-2 my-4 mx-2 font-bold text-white rounded cursor-pointer bg-violet-500 hover:bg-violet-700`}>Reset</button>
+              <button
+                onClick={_ => random()}
+                className={`px-4 py-2 my-4 mx-2 font-bold text-white rounded cursor-pointer bg-teal-500 hover:bg-teal-700`}
+              >
+                Random
+              </button>
+              <button
+                onClick={_ => reset(true)}
+                className={`px-4 py-2 my-4 mx-2 font-bold text-white rounded cursor-pointer bg-violet-500 hover:bg-violet-700`}
+              >
+                Reset
+              </button>
             </div>
           </div>
         </div>
-        <Grid className="min-w-350" graph={graph} updateGraph={updateGraph} modeSelected={mode !== Mode.None} result={pathResult.result && pathResult.result?.path ? pathResult.result.path : []} />
+        <Grid
+          className="min-w-350"
+          graph={graph}
+          updateGraph={updateGraph}
+          modeSelected={mode !== Mode.None}
+          result={pathResult.result && pathResult.result?.path ? pathResult.result.path : []}
+        />
       </main>
     </>
   );
