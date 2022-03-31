@@ -5,6 +5,7 @@ import {Grid} from './components/Grid';
 import {faDumpster, faFlagCheckered, faFontAwesome, faMountain, faRoadSpikes, faSun} from '@fortawesome/free-solid-svg-icons';
 import {ButtonPicker} from './components/ButtonPicker';
 import {dijkstra, dijkstraOutput} from './utils/dijkstra'
+import {graphRandomFill} from './utils/random'
 
 export enum Mode {
   None,
@@ -17,7 +18,7 @@ export enum Mode {
 }
 
 function App() {
-  const [graph, setGraph] = useState(new Graph(3, 3))
+  const [graph, setGraph] = useState(new Graph(6, 6))
   const [pathResult, setPathResult] = useState({
     time: null,
     result: null,
@@ -106,6 +107,12 @@ function App() {
     })
   }
 
+  const random = () => {
+    reset()
+    const newGraph = graphRandomFill(new Graph(graph.width, graph.height))
+    setGraph(newGraph)
+  }
+
   return (
     <>
       <main className="flex items-center w-full h-full align-center">
@@ -124,6 +131,7 @@ function App() {
             <div>
               <button onClick={_ => runDijkstra()} className={`px-4 py-2 my-4 mx-2 font-bold text-white rounded cursor-pointer ${canRun ? "bg-blue-500 hover:bg-blue-700" : "bg-gray-500"}`} disabled={!canRun}>Find route</button>
               <button onClick={_ => reset(true)} className={`px-4 py-2 my-4 font-bold text-white rounded cursor-pointer bg-blue-500 hover:bg-blue-700`}>Reset</button>
+              <button onClick={_ => random()} className={`px-4 py-2 my-4 font-bold text-white rounded cursor-pointer bg-blue-500 hover:bg-blue-700`}>Random</button>
             </div>
           </div>
           <div className="flex flex-wrap justify-center">
