@@ -1,6 +1,5 @@
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Dijkstra algorithm implementation
+[Online version](https://charming-melomakarona-26507b.netlify.app/)
 
 ## Available Scripts
 

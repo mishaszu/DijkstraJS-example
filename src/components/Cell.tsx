@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {FC} from "react";
 import {Cell as GraphCell, Kind} from '../utils/graph'
-import {faFlagCheckered, faFontAwesome, faMountain, faRoadSpikes, faSun} from '@fortawesome/free-solid-svg-icons';
+import {faCertificate, faFlagCheckered, faFontAwesome, faMountain, faRoadSpikes, faSun} from '@fortawesome/free-solid-svg-icons';
 import './Cell.css'
 
 interface Props {
@@ -20,8 +20,10 @@ const kindToIcon = (kind: Kind, iconSize: "2x" | "3x" | "5x") => {
       return <FontAwesomeIcon size={iconSize} icon={faFontAwesome} />
     case Kind.Finish:
       return <FontAwesomeIcon size={iconSize} icon={faFlagCheckered} />
-    case Kind.Wormhole:
+    case Kind.WormholeEntrance:
       return <FontAwesomeIcon size={iconSize} icon={faSun} />
+    case Kind.WormholeExit:
+      return <FontAwesomeIcon size={iconSize} icon={faCertificate} />
     case Kind.Boulder:
       return <FontAwesomeIcon size={iconSize} icon={faMountain} />
     case Kind.Gravel:

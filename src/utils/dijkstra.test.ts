@@ -71,8 +71,8 @@ it("Wormhole 4x4 scenario", async () => {
   const graph = new Graph(4, 4);
   graph.setStart("1")
   graph.setFinish("16")
-  graph.setWormhole("2")
-  graph.setWormhole("15")
+  graph.setWormholeEntrance("2")
+  graph.setWormholeExit("15")
   const result = await dijkstra(graph)
   expect(result.path).toHaveLength(4)
   expect(result.distance).toBe(2)

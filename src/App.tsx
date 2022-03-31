@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import './App.css';
 import {Graph, Kind} from './utils/graph';
 import {Grid} from './components/Grid';
-import {faDumpster, faFlagCheckered, faFontAwesome, faMountain, faRoadSpikes, faSun} from '@fortawesome/free-solid-svg-icons';
+import {faCertificate, faDumpster, faFlagCheckered, faFontAwesome, faMountain, faRoadSpikes, faSun} from '@fortawesome/free-solid-svg-icons';
 import {ButtonPicker} from './components/ButtonPicker';
 import {dijkstra, dijkstraOutput} from './utils/dijkstra'
 import {graphRandomFill} from './utils/random'
@@ -13,7 +13,8 @@ export enum Mode {
   Finish,
   Boulder,
   Gravel,
-  Wormhole,
+  WormholeStart,
+  WormholeEnd,
   Clear
 }
 
@@ -78,8 +79,11 @@ function App() {
       case Mode.Gravel:
         graph.setGravel(id)
         break
-      case Mode.Wormhole:
-        graph.setWormhole(id)
+      case Mode.WormholeStart:
+        graph.setWormholeEntrance(id)
+        break
+      case Mode.WormholeEnd:
+        graph.setWormholeExit(id)
         break
       case Mode.Clear:
         graph.setRoad(id)
@@ -186,10 +190,16 @@ function App() {
               icon={faFlagCheckered}
             />
             <ButtonPicker
-              onClick={modeClick(Mode.Wormhole)}
-              text="Wormhole"
-              selected={mode === Mode.Wormhole}
+              onClick={modeClick(Mode.WormholeStart)}
+              text="Wormhole Entrance"
+              selected={mode === Mode.WormholeStart}
               icon={faSun}
+            />
+            <ButtonPicker
+              onClick={modeClick(Mode.WormholeEnd)}
+              text="Wormhole Exit"
+              selected={mode === Mode.WormholeEnd}
+              icon={faCertificate}
             />
             <ButtonPicker
               onClick={modeClick(Mode.Boulder)}
@@ -202,12 +212,6 @@ function App() {
               text="Gravel"
               selected={mode === Mode.Gravel}
               icon={faRoadSpikes}
-            />
-            <ButtonPicker
-              onClick={modeClick(Mode.Clear)}
-              text="Clear"
-              selected={mode === Mode.Clear}
-              icon={faDumpster}
             />
           </div>
           <div className="flex flex-col items-center my-4">

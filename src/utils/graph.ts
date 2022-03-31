@@ -4,7 +4,8 @@ export enum Kind {
   Finish = "Finish",
   Gravel = "Gravel",
   Boulder = "Boulder",
-  Wormhole = "Wormhole",
+  WormholeEntrance = "WormholeEntrance",
+  WormholeExit = "WormholeExit",
 }
 
 export class Cell {
@@ -66,10 +67,10 @@ export class Graph {
       neigbours.push(cells[(y - 1) * width + x])
       neigbours.push(cells[(y + 1) * width + x])
     }
-    if (kind === Kind.Wormhole) {
+    if (kind === Kind.WormholeEntrance) {
       this
         .cells
-        .filter(c => c.kind === Kind.Wormhole && c.id !== id)
+        .filter(c => c.kind === Kind.WormholeExit)
         .forEach(c => neigbours.push(c))
     }
     return neigbours.filter(cell => cell.kind !== Kind.Boulder && cell.kind !== Kind.Start)
@@ -89,7 +90,7 @@ export class Graph {
     }
   }
 
-  private setCommonKind(id: string, kind: Kind.Boulder | Kind.Gravel | Kind.Wormhole) {
+  private setCommonKind(id: string, kind: Kind.Boulder | Kind.Gravel | Kind.WormholeEntrance | Kind.WormholeExit) {
     const cell = this.findCellById(id);
     if (cell && cell.kind !== kind) {
       cell.kind = kind
@@ -118,8 +119,12 @@ export class Graph {
     return this.setCommonKind(id, Kind.Gravel)
   }
 
-  setWormhole(id: string) {
-    return this.setCommonKind(id, Kind.Wormhole)
+  setWormholeEntrance(id: string) {
+    return this.setCommonKind(id, Kind.WormholeEntrance)
+  }
+
+  setWormholeExit(id: string) {
+    return this.setCommonKind(id, Kind.WormholeExit)
   }
 
   setRoad(id: string) {
@@ -133,7 +138,7 @@ export class Graph {
   }
 
   static calcDistance(cell: Cell, parent?: Cell) {
-    if (parent && parent.kind === Kind.Wormhole && cell.kind === Kind.Wormhole) {
+    if (parent && parent.kind === Kind.WormholeEntrance && cell.kind === Kind.WormholeExit) {
       return 0
     } else if (cell.kind === Kind.Gravel) {
       return 2
